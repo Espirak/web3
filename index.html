@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title></title>
+    <link rel="stylesheet" type="text/css" href="assets/css/link.css"/>
+    <link rel="stylesheet" type="text/css" href="assets/css/layui.css"/>
+    <link rel="stylesheet" type="text/css" href="assets/css/layer.css"/>
+</head>
+<body>
+<div class="rebinding-box">
+    <div class="box-title">
+        <h2 class="mtb5">以太坊代币转账</h2>
+        <i style="display: none">Transaction has made:) id: <span></span></i>
+    </div>
+
+    <div class="onebox-form">
+        <div class="oneform">
+            <form action="base.php" method="post">
+                <div class="oneform-box">
+                    <label class="oneform-label">扣款地址</label>
+                    <div class="oneform-input">
+                        <select name="fromAddress" id="address">
+                        </select>
+                    </div>
+                </div>
+                <div class="oneform-box">
+                    <label class="oneform-label">转出地址</label>
+                    <div class="oneform-input">
+                        <input type="text" name="address" autocomplete="off" placeholder="请填写以太坊地址">
+                    </div>
+                </div>
+                <div class="oneform-box">
+                    <label class="oneform-label">转出密码</label>
+                    <div class="oneform-input">
+                        <input type="password" name="password" autocomplete="off" placeholder="请填写转出密码">
+                    </div>
+                </div>
+                <div class="oneform-box">
+                    <label class="oneform-label">转出数量</label>
+                    <div class="oneform-input">
+                        <input type="text" name="number" autocomplete="off" placeholder="请填写转出数量">
+                    </div>
+                </div>
+                <div class="onebtn-box">
+                    <button type="button" class="onebtn" id="onebtn" onclick="fun()">提交</button>
+                </div>
+                <input type="hidden" name="action" value="smartContractTransaction">
+            </form>
+        </div>
+    </div>
+</div>
+</body>
+<script src="assets/js/jq.js" type="text/javascript" charset="utf-8"></script>
+<script src="assets/js/layui.js" type="text/javascript" charset="utf-8"></script>
+<script src="assets/js/layer.js" type="text/javascript" charset="utf-8"></script>
+<script type="text/javascript">
+    function ajax_post_submit_form(obj, callback) {
+        $.post(obj.attr('action'), obj.serialize(), callback, 'json');
+    }
+
+    function getAddress(){
+        $.post("base.php", {action: 'getAddress'}, function(data){
+            if(data){
+                for(var i = 0; i < data.length; i++){
+                    $("#address").append("<option value='" + data[i] + "'>" + data[i] + "</option>");
+                }
+            }
+        }, 'json')
+    }
+    getAddress();
+
+    function fun() {
+        var validateElement = ['address', 'password', 'number'];
+
+        for(var i = 0; i <= validateElement.length; i++){
+            var element = $("input[name=" + validateElement[i] + "]");
+            if(element.val() == ''){
+                element.focus();
+                layer.msg(element.attr('placeholder'))
+                return false;
+            }
+        }
+
+        var ii = layer.load();
+
+        ajax_post_submit_form($('form'), function(data){
+            if(data.status <= 0) {
+                layer.msg(data.msg);
+            }
+
+            if(data.status == 1){
+                $(".box-title i").show().find('span').html(data.data);
+            }
+
+            layer.close(ii);
+        })
+    }
+</script>
+</html>
